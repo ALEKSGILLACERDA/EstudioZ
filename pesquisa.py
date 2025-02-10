@@ -5,41 +5,49 @@ import dash_bootstrap_components as dbc
 def calcular_nivel_atividade(soma):
     if soma <= -1:
         return 'inativo'
-    elif soma <= 3:
+    elif soma <= 4:
         return 'pouco ativo'
-    elif soma <= 6:
+    elif soma <= 7:
         return 'ativo'
-    elif soma <= 10:
+    elif soma <= 12:
         return 'muito ativo'
     else:
         return 'globeleza'
 
 # Função para determinar a personalidade
-def determinar_personalidade(soma_funcao, respostas):
-    a, b, c, d, e = respostas
-    personalidade = 'folião moderado'
-    if soma_funcao == 'inativo':
-        if c > 4:
+def determinar_personalidade(nivel_atividade, respostas):
+    maratonar_series, tomar_todas, trabalhar, paquerar, dar_close = respostas
+    personalidade = 'folião moderado'  # Valor padrão
+
+    if nivel_atividade == 'inativo':
+        if trabalhar > 4:
             personalidade = 'workholic'
         else:
             personalidade = 'Carnaval não dá xp'
-    elif soma_funcao == 'pouco ativo':
-        if b > 4:
+    elif nivel_atividade == 'pouco ativo':
+        if tomar_todas > 4:
             personalidade = 'boemio'
-        elif d > 4:
+        elif paquerar > 4:
             personalidade = 'beijoqueiro'
-        elif e > 4:
+        elif dar_close > 4:
             personalidade = 'icone da moda'
-    elif soma_funcao == 'ativo':
-        if b + e >= 8:
+    elif nivel_atividade == 'ativo':
+        if tomar_todas + dar_close >= 8:
             personalidade = 'furacao'
-        elif b + d >= 8:
+        elif tomar_todas + paquerar >= 8:
             personalidade = 'amanhã é outro dia'
-        elif d + e >= 8:
+        elif paquerar + dar_close >= 8:
             personalidade = 'o diabo veste gliter'
-    elif soma_funcao == 'muito ativo':
-        if b + d + e >= 12:
+    elif nivel_atividade == 'muito ativo':
+        if tomar_todas + paquerar + dar_close >= 13:
             personalidade = 'globeleza'
+        elif tomar_todas + dar_close >= 8:
+            personalidade = 'furacao'
+        elif tomar_todas + paquerar >= 8:
+            personalidade = 'amanhã é outro dia'
+        elif paquerar + dar_close >= 8:
+            personalidade = 'o diabo veste gliter'
+
     return personalidade
 
 # Criar o aplicativo Dash
@@ -51,22 +59,21 @@ app.layout = dbc.Container([
     dbc.Card([
         dbc.CardBody([
             html.Label("Carnaval pra você é maratonar séries? (0 a 5)"),
-            dcc.Input(id="input-a", type="number", min=0, max=5, value=0, className="mb-3"),
+            dcc.Input(id="input-maratonar-series", type="number", min=0, max=5, value=0, className="mb-3"),
             
             html.Label("Carnaval pra você é tomar todas?? (0 a 5)"),
-            dcc.Input(id="input-b", type="number", min=0, max=5, value=0, className="mb-3"),
+            dcc.Input(id="input-tomar-todas", type="number", min=0, max=5, value=0, className="mb-3"),
             
             html.Label("Carnaval pra você é trabalhar? (0 a 5)"),
-            dcc.Input(id="input-c", type="number", min=0, max=5, value=0, className="mb-3"),
+            dcc.Input(id="input-trabalhar", type="number", min=0, max=5, value=0, className="mb-3"),
             
             html.Label("Carnaval pra você é paquerar? (0 a 5)"),
-            dcc.Input(id="input-d", type="number", min=0, max=5, value=0, className="mb-3"),
+            dcc.Input(id="input-paquerar", type="number", min=0, max=5, value=0, className="mb-3"),
             
             html.Label("Carnaval pra você é dar close? (0 a 5)"),
-            dcc.Input(id="input-e", type="number", min=0, max=5, value=0, className="mb-3"),
+            dcc.Input(id="input-dar-close", type="number", min=0, max=5, value=0, className="mb-3"),
             
-            dbc.Button("Calcular", id="botao-calcular", color="primary", className="mt-3" ,
-            style={"marginLeft": "55px"})
+            dbc.Button("Calcular", id="botao-calcular", color="primary", className="mt-3", style={"marginLeft": "55px"})
         ])
     ]),
     html.Div(id="resultado", className="mt-4")
@@ -76,26 +83,26 @@ app.layout = dbc.Container([
 @app.callback(
     Output("resultado", "children"),
     Input("botao-calcular", "n_clicks"),
-    State("input-a", "value"),
-    State("input-b", "value"),
-    State("input-c", "value"),
-    State("input-d", "value"),
-    State("input-e", "value"),
+    State("input-maratonar-series", "value"),
+    State("input-tomar-todas", "value"),
+    State("input-trabalhar", "value"),
+    State("input-paquerar", "value"),
+    State("input-dar-close", "value"),
 )
-def calcular_resultado(n_clicks, a, b, c, d, e):
+def calcular_resultado(n_clicks, maratonar_series, tomar_todas, trabalhar, paquerar, dar_close):
     if n_clicks is None:
         return ""
     
     # Verificar se todas as entradas são válidas
-    if None in [a, b, c, d, e]:
+    if None in [maratonar_series, tomar_todas, trabalhar, paquerar, dar_close]:
         return dbc.Alert("Por favor, preencha todas as notas.", color="danger")
     
     # Calcular a soma
-    soma = (b + d + e) - (a + c)
+    soma = (tomar_todas + paquerar + dar_close) - (maratonar_series + trabalhar)
     
     # Determinar o nível de atividade e a personalidade
     nivel_atividade = calcular_nivel_atividade(soma)
-    personalidade = determinar_personalidade(nivel_atividade, [a, b, c, d, e])
+    personalidade = determinar_personalidade(nivel_atividade, [maratonar_series, tomar_todas, trabalhar, paquerar, dar_close])
     
     # Exibir o resultado
     return dbc.Card([
@@ -109,4 +116,3 @@ def calcular_resultado(n_clicks, a, b, c, d, e):
 # Rodar o aplicativo
 if __name__ == "__main__":
     app.run_server(debug=True)
-  

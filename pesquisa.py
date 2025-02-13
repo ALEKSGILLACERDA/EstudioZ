@@ -56,28 +56,52 @@ app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 # Layout do aplicativo
 app.layout = dbc.Container([
     html.H1("Pesquisa de Carnaval", className="text-center mt-4 mb-4"),
+
     dbc.Card([
         dbc.CardBody([
-            html.Label("Carnaval pra você é maratonar séries? (0 a 5)"),
-            dcc.Input(id="input-maratonar-series", type="number", min=0, max=5, value=0, className="mb-3"),
-            
-            html.Label("Carnaval pra você é tomar todas?? (0 a 5)"),
-            dcc.Input(id="input-tomar-todas", type="number", min=0, max=5, value=0, className="mb-3"),
-            
-            html.Label("Carnaval pra você é trabalhar? (0 a 5)"),
-            dcc.Input(id="input-trabalhar", type="number", min=0, max=5, value=0, className="mb-3"),
-            
-            html.Label("Carnaval pra você é paquerar? (0 a 5)"),
-            dcc.Input(id="input-paquerar", type="number", min=0, max=5, value=0, className="mb-3"),
-            
-            html.Label("Carnaval pra você é dar close? (0 a 5)"),
-            dcc.Input(id="input-dar-close", type="number", min=0, max=5, value=0, className="mb-3"),
-            
-            dbc.Button("Calcular", id="botao-calcular", color="primary", className="mt-3", style={"marginLeft": "55px"})
+            # Linha para inputs
+            dbc.Row([
+                dbc.Col([
+                    html.Label("Carnaval pra você é maratonar séries? (0 a 5)"),
+                    dcc.Input(id="input-maratonar-series", type="number", min=0, max=5, value=0, className="form-control")
+                ], width=6),
+
+                dbc.Col([
+                    html.Label("Carnaval pra você é tomar todas? (0 a 5)"),
+                    dcc.Input(id="input-tomar-todas", type="number", min=0, max=5, value=0, className="form-control")
+                ], width=6),
+            ], className="mb-3"),
+
+            dbc.Row([
+                dbc.Col([
+                    html.Label("Carnaval pra você é trabalhar? (0 a 5)"),
+                    dcc.Input(id="input-trabalhar", type="number", min=0, max=5, value=0, className="form-control")
+                ], width=6),
+
+                dbc.Col([
+                    html.Label("Carnaval pra você é paquerar? (0 a 5)"),
+                    dcc.Input(id="input-paquerar", type="number", min=0, max=5, value=0, className="form-control")
+                ], width=6),
+            ], className="mb-3"),
+
+            dbc.Row([
+                dbc.Col([
+                    html.Label("Carnaval pra você é dar close? (0 a 5)"),
+                    dcc.Input(id="input-dar-close", type="number", min=0, max=5, value=0, className="form-control")
+                ], width=6),
+            ], className="mb-3"),
+
+            # Botão centralizado
+            dbc.Row([
+                dbc.Col([
+                    dbc.Button("Calcular", id="botao-calcular", color="primary", className="w-100")
+                ], width=6, className="mx-auto")
+            ], className="mt-3")
         ])
-    ]),
+    ], className="shadow p-4"),
+
     html.Div(id="resultado", className="mt-4")
-])
+], className="container mt-4")
 
 # Callback para calcular o resultado
 @app.callback(
@@ -111,8 +135,8 @@ def calcular_resultado(n_clicks, maratonar_series, tomar_todas, trabalhar, paque
             html.P(f"Nível de atividade: {nivel_atividade}"),
             html.P(f"Personalidade: {personalidade}")
         ])
-    ])
+    ], className="shadow mt-3")
 
 # Rodar o aplicativo
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=True)  
